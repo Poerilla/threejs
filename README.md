@@ -1,12 +1,8 @@
-      //Group the data by source
-      let dataBySource = d3
-        .nest()
-        .key(function(d) {
-          return d.Source;
-        })
-        .entries(data);
-      console.log(dataBySource);# threejs
+
 Visualizing network packet data using three.js
+
+## Run project
+open file in browser - packet_visuals.html
 
 ## Sample Data Packet
 
