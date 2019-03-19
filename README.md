@@ -1,4 +1,11 @@
-# threejs
+      //Group the data by source
+      let dataBySource = d3
+        .nest()
+        .key(function(d) {
+          return d.Source;
+        })
+        .entries(data);
+      console.log(dataBySource);# threejs
 Visualizing network packet data using three.js
 
 ## Sample Data Packet
@@ -35,5 +42,5 @@ Visualizing network packet data using three.js
 6. TODO: Document code
 
 ### Hours put in
-Monday 18th March - 4 hrs.
-Tuesday 18th March - 30 minutes
+* Monday 18th March - 4 hrs.
+* Tuesday 18th March - 30 minutes
