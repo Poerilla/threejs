@@ -23,7 +23,14 @@
     <script src="js/sample_pcap.js"></script>
     <div id="ThreeJS" style="position: absolute; left:0px; top:0px"></div>
     <script>
-      var container, scene, camera, renderer, controls, t, pcapDataIndex, seen;
+      var container,
+        scene,
+        camera,
+        renderer,
+        controls,
+        t,
+        pcapDataIndex,
+        maxTime;
       var onWireframeOpacity = 0.5;
       var projector, INTERSECTED;
       var raycaster = new THREE.Raycaster();
@@ -46,16 +53,19 @@
         let array = pcapData;
         var data = [];
         let newTime = 0;
+        let allTime = [];
         pcapData[0].Time = pcapData[0].Time * 1000000;
         for (let index = 0; index < pcapData.length - 1; index++) {
           newTime = pcapData[index + 1].Time * 1000000;
           pcapData[index + 1].Time = parseInt(newTime);
           let diff = pcapData[index + 1].Time - pcapData[index].Time;
           data[index] = diff;
+          allTime[index] = pcapData[index].Time;
         }
         console.log(pcapData);
         console.log(Math.min.apply(null, data));
         console.log(Math.max.apply(null, data));
+        maxTime = Math.max.apply(null, allTime);
       }
 
       function init() {
@@ -199,12 +209,22 @@
       function update() {
         let keyframe = findNearestKeyframes(t);
         //console.log(t,keyframe);
+        let index = pcapDataIndex;
+        let diff = parseInt(pcapData[index].Time - t);
+        console.log(t, diff);
+        if (diff > 15) {
+          console.log("time lapse");
+          t += parseInt(diff / 2);
+        } else {
+          t += 1;
+          console.log("single move");
+        }
 
-        t += 1;
-        // if (t < 3) {
-        //   console.log(t == keyframe);
-        //   console.log(t, keyframe);
-        // }
+        // t = t % maxTime;
+
+        if (t >= maxTime) {
+          console.log("done**************************************");
+        }
         if (!mousePressed && !activeCell) {
           ico.rotation.y += 0.0;
           ico.rotation.x += 0.0;
@@ -243,7 +263,7 @@
                     ico.children[i].material.color.setHex(0x008000);
                     ico.children[i].scale.set(2, 2, 2);
                   } else if (keyframe.Protocol == "CMPP") {
-                    ico.children[i].material.color.setHex(0xFFFF00);
+                    ico.children[i].material.color.setHex(0xffff00);
                     ico.children[i].scale.set(2, 2, 2);
                   }
                 }
@@ -254,7 +274,7 @@
                     ico.children[i].material.color.setHex(0x008000);
                     ico.children[i].scale.set(2, 2, 2);
                   } else if (keyframe.Protocol == "CMPP") {
-                    ico.children[i].material.color.setHex(0xFFFF00);
+                    ico.children[i].material.color.setHex(0xffff00);
                     ico.children[i].scale.set(2, 2, 2);
                   }
                 }
