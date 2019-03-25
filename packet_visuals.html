@@ -1,230 +1,196 @@
 <html>
-  <head>
-    <title>The Resistance</title>
-    <style>
-      body {
-        margin: 0;
-      }
-      canvas {
-        width: 100%;
-        height: 100%;
-      }
-    </style>
-  </head>
-  <body>
-    <script src="js/three.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r79/three.min.js"></script>
-    <script src="js/stats.js"></script>
-    <script src="js/stats.min.js"></script>
-    <script src="js/orbitControls.js"></script>
-    <script src="https://d3js.org/d3.v5.min.js"></script>
-    <script src="js/sample_pcap.js"></script>
-    <div id="ThreeJS" style="position: absolute; left:0px; top:0px"></div>
-    <script>
-      var container, scene, camera, renderer, controls, t;
-      var projector, INTERSECTED;
-      var raycaster = new THREE.Raycaster();
-      var mouse = new THREE.Vector2();
-      var ico;
-      var mousePressed = false;
-      var activeCell = false;
-      var syncframe = 0;
-      var prevTime = 0;
-      var clock = new THREE.Clock();
-      clock.start();
-      //console.log(clock.getElapsedTime());
 
-      // find a pair of pcapData [a, b] such that `a.t < t` and `b.t > t`.
-      // In other words, find the previous and next pcapData given the
-      // specific time `t`. If no previous or next pcapData is found, null
-      // is returned instead.
-      function findNearestKeyframes(t) {
-        let prevKeyframe = null;
-        for (let i = 0; i < pcapData.length; i++) {
-          if (pcapData[i].Time > t) {
-            return [prevKeyframe, pcapData[i]];
-          }
-          prevKeyframe = pcapData[i];
+<head>
+  <title>The Resistance</title>
+  <style>
+    body {
+      margin: 0;
+    }
+
+    canvas {
+      width: 100%;
+      height: 100%;
+    }
+  </style>
+</head>
+
+<body>
+  <script src="js/three.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r79/three.min.js"></script>
+  <script src="js/stats.js"></script>
+  <script src="js/stats.min.js"></script>
+  <script src="js/orbitControls.js"></script>
+  <script src="https://d3js.org/d3.v5.min.js"></script>
+  <script src="js/sample_pcap.js"></script>
+  <div id="ThreeJS" style="position: absolute; left:0px; top:0px"></div>
+  <script>
+    var container, scene, camera, renderer, controls, t, pcapDataIndex;
+    var projector, INTERSECTED;
+    var raycaster = new THREE.Raycaster();
+    var mouse = new THREE.Vector2();
+    var ico;
+    var mousePressed = false;
+    var activeCell = false;
+    var syncframe = 0;
+    var prevTime = 0;
+    var clock = new THREE.Clock();
+    clock.start();
+    //console.log(clock.getElapsedTime());
+
+    // find a pair of pcapData [a, b] such that `a.t < t` and `b.t > t`.
+    // In other words, find the previous and next pcapData given the
+    // specific time `t`. If no previous or next pcapData is found, null
+    // is returned instead.
+    function findNearestKeyframes(t) {
+      let prevKeyframe = null;
+      if (t == pcapData[pcapDataIndex].Time) {
+        console.log(t, pcapData[pcapDataIndex].Time);
+        pcapDataIndex += 1;
+        return pcapData[pcapDataIndex]
+      }
+      return null;
+
+      for (let i = 0; i < pcapData.length; i++) {
+        if (pcapData[i].Time > t) {
+          return [prevKeyframe, pcapData[i]];
         }
-
-        return [prevKeyframe, null];
+        prevKeyframe = pcapData[i];
       }
 
-      init();
-      animate();
+      return [prevKeyframe, null];
+    }
 
-      function init() {
-        scene = new THREE.Scene();
+    init();
+    animate();
 
-        var SCREEN_WIDTH = window.innerWidth,
-          SCREEN_HEIGHT = window.innerHeight;
-        var VIEW_ANGLE = 45,
-          ASPECT = SCREEN_WIDTH / SCREEN_HEIGHT,
-          NEAR = 0.1,
-          FAR = 20000;
-        var MAG_ANGLE = 30;
-        camera = new THREE.PerspectiveCamera(VIEW_ANGLE, ASPECT, NEAR, FAR);
-        scene.add(camera);
-        camera.position.set(0, 50, 150);
-        camera.lookAt(scene.position);
+    function init() {
+      // initialize the time
+      t = 1;
+      pcapDataIndex = 0;
+      let array = pcapData
+      var data = [];
 
-        renderer = new THREE.WebGLRenderer({ antialias: true });
-        renderer.setSize(SCREEN_WIDTH, SCREEN_HEIGHT);
-        container = document.getElementById("ThreeJS");
-        container.appendChild(renderer.domElement);
+      pcapData[0].Time = pcapData[0].Time * 1000000;
+      for (let index = 0; index < pcapData.length - 1; index++) {
+        pcapData[index+1].Time = pcapData[index+1].Time * 1000000;
+        let diff = pcapData[index + 1].Time - pcapData[index].Time
+        data[index] = diff;
+      }
+      console.log(data);
+      console.log(Math.min.apply(null, data));
+      console.log(Math.max.apply(null, data));
+      scene = new THREE.Scene();
 
-        controls = new THREE.OrbitControls(camera, renderer.domElement);
+      var SCREEN_WIDTH = window.innerWidth,
+        SCREEN_HEIGHT = window.innerHeight;
+      var VIEW_ANGLE = 45,
+        ASPECT = SCREEN_WIDTH / SCREEN_HEIGHT,
+        NEAR = 0.1,
+        FAR = 20000;
+      var MAG_ANGLE = 30;
+      camera = new THREE.PerspectiveCamera(VIEW_ANGLE, ASPECT, NEAR, FAR);
+      scene.add(camera);
+      camera.position.set(0, 50, 150);
+      camera.lookAt(scene.position);
 
-        var light = new THREE.PointLight(0xffffff);
-        light.position.set(0, 250, 0);
-        scene.add(light);
+      renderer = new THREE.WebGLRenderer({ antialias: true });
+      renderer.setSize(SCREEN_WIDTH, SCREEN_HEIGHT);
+      container = document.getElementById("ThreeJS");
+      container.appendChild(renderer.domElement);
 
-        THREE.ImageUtils.crossOrigin = "";
+      controls = new THREE.OrbitControls(camera, renderer.domElement);
 
-        var icoG = new THREE.IcosahedronGeometry(50, 0);
-        ico = new THREE.Mesh(
-          icoG,
-          new THREE.MeshBasicMaterial({ wireframe: true })
+      var light = new THREE.PointLight(0xffffff);
+      light.position.set(0, 250, 0);
+      scene.add(light);
+
+      THREE.ImageUtils.crossOrigin = "";
+
+      var icoG = new THREE.IcosahedronGeometry(50, 0);
+      ico = new THREE.Mesh(
+        icoG,
+        new THREE.MeshBasicMaterial({ wireframe: true })
+      );
+      ico.renderOrder = 1;
+
+      console.log(ico.geometry.vertices);
+
+      for (var i in ico.geometry.vertices) {
+        vs = new THREE.Mesh(
+          new THREE.SphereGeometry(1.2),
+          new THREE.MeshBasicMaterial({ color: 0xff1111 })
         );
-        ico.renderOrder = 1;
 
-        console.log(ico.geometry.vertices);
+        vs.position.copy(ico.geometry.vertices[i]);
 
-        for (var i in ico.geometry.vertices) {
-          vs = new THREE.Mesh(
-            new THREE.SphereGeometry(1.2),
-            new THREE.MeshBasicMaterial({ color: 0xff1111 })
-          );
+        vs.userData.verticeIndex = i;
+        vs.userData.behav = "cell";
+        ico.add(vs);
 
-          vs.position.copy(ico.geometry.vertices[i]);
+        var icoVG = new THREE.SphereGeometry(2);
+        var s = new THREE.Mesh(
+          icoVG,
+          new THREE.MeshBasicMaterial({ color: 0xff1111 })
+        );
 
-          vs.userData.verticeIndex = i;
-          vs.userData.behav = "cell";
-          ico.add(vs);
+        s.material.color.setHex(0x00aa1ff);
+        s.material.transparent = true;
+        s.material.opacity = 0.1;
+        s.material.wireframe = true;
+        s.scale.set(2, 2, 2);
+        s.userData.verticeIndex = i;
+        s.userData.behav = "wireframe";
+        s.position.copy(ico.geometry.vertices[i]);
+        s.renderOrder = 1;
+        s.linejoin = "bevel";
 
-          var icoVG = new THREE.SphereGeometry(2);
-          var s = new THREE.Mesh(
-            icoVG,
-            new THREE.MeshBasicMaterial({ color: 0xff1111 })
-          );
-
-          s.material.color.setHex(0x00aa1ff);
-          s.material.transparent = true;
-          s.material.opacity = 0.1;
-          s.material.wireframe = true;
-          s.scale.set(2, 2, 2);
-          s.userData.verticeIndex = i;
-          s.userData.behav = "wireframe";
-          s.position.copy(ico.geometry.vertices[i]);
-          s.renderOrder = 1;
-          s.linejoin = "bevel";
-
-          ico.add(s);
-        }
-        console.log(ico);
-
-        scene.add(ico);
-
-        window.addEventListener("resize", onWindowResize, false);
-        //document.addEventListener("mousemove", onDocumentMouseMove, false);
-        //document.addEventListener("mousedown", onDocumentMouseDown, false);
-        //document.addEventListener("mouseup", onDocumentMouseUp, false);
+        ico.add(s);
       }
+      console.log(ico);
 
-      function onWindowResize() {
-        camera.aspect = window.innerWidth / window.innerHeight;
-        camera.updateProjectionMatrix();
-        renderer.setSize(window.innerWidth, window.innerHeight);
-      }
+      scene.add(ico);
 
-      function onDocumentMouseDown(event) {
-        mousePressed = true;
-      }
-      function onDocumentMouseUp(event) {
-        mousePressed = false;
-        syncframe = 0;
-      }
-      function onDocumentMouseMove(event) {
-        mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-        mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
-        raycaster.setFromCamera(mouse.clone(), camera);
+      window.addEventListener("resize", onWindowResize, false);
+      //document.addEventListener("mousemove", onDocumentMouseMove, false);
+      //document.addEventListener("mousedown", onDocumentMouseDown, false);
+      //document.addEventListener("mouseup", onDocumentMouseUp, false);
+    }
 
-        var objects = raycaster.intersectObjects(ico.children);
-        var o = [];
-        if (objects.length > 0) {
-          for (var i in objects) {
-            if (objects[i].object.userData.verticeIndex) {
-              o.push(objects[i].object.userData.verticeIndex);
-            }
-          }
-          o = o.length > 0 ? o[0] : -1;
-        } else {
-          o = -1;
-        }
-        activeCell = o >= 0 ? true : false;
+    function onWindowResize() {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    }
 
-        if (!mousePressed) {
-          console.log(ico.children.length);
-          for (var i in ico.children) {
-            if (ico.children[i].userData.behav === "cell") {
-              if (ico.children[i].userData.verticeIndex === o) {
-                ico.children[i].material.color.setHex(0x78f9f6);
-                ico.children[i].scale.set(3, 3, 3);
-              } else {
-                ico.children[i].material.color.setHex(0xff1111);
-                ico.children[i].scale.set(1, 1, 1);
-              }
-            }
-            if (ico.children[i].userData.behav === "wireframe") {
-              if (ico.children[i].userData.verticeIndex === o) {
-                ico.children[i].material.opacity = 0.6;
-              } else {
-                ico.children[i].material.opacity = 0.1;
-              }
-            }
+    function onDocumentMouseDown(event) {
+      mousePressed = true;
+    }
+    function onDocumentMouseUp(event) {
+      mousePressed = false;
+      syncframe = 0;
+    }
+    function onDocumentMouseMove(event) {
+      mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+      mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+      raycaster.setFromCamera(mouse.clone(), camera);
+
+      var objects = raycaster.intersectObjects(ico.children);
+      var o = [];
+      if (objects.length > 0) {
+        for (var i in objects) {
+          if (objects[i].object.userData.verticeIndex) {
+            o.push(objects[i].object.userData.verticeIndex);
           }
         }
+        o = o.length > 0 ? o[0] : -1;
+      } else {
+        o = -1;
       }
+      activeCell = o >= 0 ? true : false;
 
-      function animate() {
-        requestAnimationFrame(animate);
-        syncframe++;
-
-        render();
-        update();
-      }
-
-      function update() {
-        // console.log("actualTime: ", clock.getElapsedTime());
-        // t = clock.getElapsedTime();
-
-        let [prevKeyframe, nextKeyframe] = findNearestKeyframes(t);
-        // console.log("time: ", t);
-
-        //console.log(prevKeyframe.Time, nextKeyframe.Time);
-        // console.log("frame @ time: ", (pcapData.length - 1) % syncframe);
-
-        if (!mousePressed && !activeCell) {
-          ico.rotation.y += 0.001;
-          ico.rotation.x += 0.001;
-        }
-
-        raycaster.setFromCamera(mouse.clone(), camera);
-
-        var objects = raycaster.intersectObjects(ico.children);
-        var o = [];
-        if (objects.length > 0) {
-          for (var i in objects) {
-            if (objects[i].object.userData.verticeIndex) {
-              o.push(objects[i].object.userData.verticeIndex);
-            }
-          }
-          o = o.length > 0 ? o[0] : -1;
-        } else {
-          o = -1;
-        }
-        activeCell = o >= 0 ? true : false;
-        for (let i = 0; i < 4; i++) {
+      if (!mousePressed) {
+        console.log(ico.children.length);
+        for (var i in ico.children) {
           if (ico.children[i].userData.behav === "cell") {
             if (ico.children[i].userData.verticeIndex === o) {
               ico.children[i].material.color.setHex(0x78f9f6);
@@ -238,17 +204,80 @@
             if (ico.children[i].userData.verticeIndex === o) {
               ico.children[i].material.opacity = 0.6;
             } else {
-              ico.children[i].material.opacity = 0.5;
+              ico.children[i].material.opacity = 0.1;
             }
           }
         }
+      }
+    }
 
-        controls.update();
+    function animate() {
+      requestAnimationFrame(animate);
+      syncframe++;
+
+      render();
+      update();
+    }
+
+    function update() {
+      // console.log("actualTime: ", clock.getElapsedTime());
+      // t = clock.getElapsedTime();
+
+      let keyframe = findNearestKeyframes(t);
+      t += 1;
+      if (t < 3) {
+        console.log(t == keyframe);
+        console.log(t, keyframe);
       }
 
-      function render() {
-        renderer.render(scene, camera);
+      // console.log("frame @ time: ", (pcapData.length - 1) % syncframe);
+
+      if (!mousePressed && !activeCell) {
+        ico.rotation.y += 0.001;
+        ico.rotation.x += 0.001;
       }
-    </script>
-  </body>
+
+      raycaster.setFromCamera(mouse.clone(), camera);
+
+      var objects = raycaster.intersectObjects(ico.children);
+      var o = [];
+      if (objects.length > 0) {
+        for (var i in objects) {
+          if (objects[i].object.userData.verticeIndex) {
+            o.push(objects[i].object.userData.verticeIndex);
+          }
+        }
+        o = o.length > 0 ? o[0] : -1;
+      } else {
+        o = -1;
+      }
+      activeCell = o >= 0 ? true : false;
+      for (let i = 0; i < 4; i++) {
+        if (ico.children[i].userData.behav === "cell") {
+          if (ico.children[i].userData.verticeIndex === o) {
+            ico.children[i].material.color.setHex(0x78f9f6);
+            ico.children[i].scale.set(3, 3, 3);
+          } else {
+            ico.children[i].material.color.setHex(0xff1111);
+            ico.children[i].scale.set(1, 1, 1);
+          }
+        }
+        if (ico.children[i].userData.behav === "wireframe") {
+          if (ico.children[i].userData.verticeIndex === o) {
+            ico.children[i].material.opacity = 0.6;
+          } else {
+            ico.children[i].material.opacity = 0.5;
+          }
+        }
+      }
+
+      controls.update();
+    }
+
+    function render() {
+      renderer.render(scene, camera);
+    }
+  </script>
+</body>
+
 </html>

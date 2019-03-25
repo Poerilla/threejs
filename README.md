@@ -1,5 +1,6 @@
 
-Visualizing network packet data using three.js
+Visualizing network packet data using three.js,
+The name of the company is Cybvernetiq, which (as interpreted by this developer) is a portmanteau of the words Skynet and Cyberdyne. In that spirit this little project is called "The Resistance", because as cyber security analysts we are the good guys!
 
 ## Run project
 open file in browser - packet_visuals.html
