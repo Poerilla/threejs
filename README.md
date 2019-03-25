@@ -35,9 +35,11 @@ open file in browser - packet_visuals.html
 4. Synchronize internal clock with packet Time variable (in progress).
 * Select time within a certain window
 * The issue here is that the packet data arrives faster than the browsers internal clock is able to keep up with. That is for every tic of the browsers clock more than one packet would have arrived.
+* Could be just how javascript handles floating point numbers. A possible solution would be to convert it all to integers and deal with each time interval separately and designate a sing;e tic of the clock to the smallest difference within the data. Make is pseudo-real-time!
 5. TODO: Animate changes in ```update()``` loop.
 6. TODO: Document code
 
 ### Hours put in
 * Monday 18th March - 4 hrs.
 * Tuesday 18th March - 30 minutes
+* Monday morning 25 March - 1 hour and counting
