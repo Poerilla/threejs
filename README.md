@@ -5,7 +5,7 @@ The name of the company is Cybernetiq, which (as interpreted by this developer) 
 ## Development Setup:
 Install the Node Package Manager and Node.js
 Clone the repository:
->git clone https://github.com/Poerilla/nodeACME
+>git clone https://github.com/Poerilla/threejs
 
 ### Linux
 Install required software
@@ -20,9 +20,10 @@ Follow the instructions at the following link:
 
 Run the start command:
 >node server.js
+
 Observe Server Prompts in the terminal and or follow this -> [link here](http://localhost:9000/index.html)
 
-Alternatively, open the html file in browser - packet_visuals.html
+>Alternatively, open the html file in browser - packet_visuals.html
 Refresh the page to start it again. 
 ---
 ## Sample Data Packet
