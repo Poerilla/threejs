@@ -19,6 +19,10 @@ open file in browser - packet_visuals.html
 ```
 ## Work done so far
 1. Selected visualization technique using the IcosahedronGeometry geometry. 
+* The flourecent blinking is for nodes which are transmitting.
+* The color of the cell, which is the dot, determines the protocol being used.
+- Green is for TCP
+- Yellow is for CCMP
 2. Select metric or variable to tie to json data 
 * Circle mesh color of virtices. Inner "cell" mesh and the outer "wireframe" mesh
 3. Analyze data using D3 to view the data using graphs
