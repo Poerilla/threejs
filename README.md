@@ -2,9 +2,25 @@ Visualizing network packet data using three.js,
 The name of the company is Cybernetiq, which (as interpreted by this developer) is a portmanteau of the words Skynet and Cyberdyne. In that spirit this little project is called "The Resistance", because as cyber security analysts we are the good guys!
 
 ## Run project
-### run server
-```node server.js```
-follow the url provided in the command prompt or follow this -> [link here](http://localhost:9000/index.html)
+## Development Setup:
+Install the Node Package Manager and Node.js
+Clone the repository:
+>git clone https://github.com/Poerilla/nodeACME
+
+### Linux
+Install required software
+>sudo apt-get install npm nodejs
+
+Install all dependencies and packages:
+>npm install
+
+### Windows
+Follow the instructions at the following link:
+>https://nodejs.org/en/download/
+
+Run the start command:
+>node server.js
+Observe Server Prompts in the terminal and or follow this -> [link here](http://localhost:9000/index.html)
 
 Alternatively, open the html file in browser - packet_visuals.html
 Refresh the page to start it again. 
