@@ -3,7 +3,11 @@ Visualizing network packet data using three.js,
 The name of the company is Cybvernetiq, which (as interpreted by this developer) is a portmanteau of the words Skynet and Cyberdyne. In that spirit this little project is called "The Resistance", because as cyber security analysts we are the good guys!
 
 ## Run project
-open file in browser - packet_visuals.html
+### run server
+node server.js
+follow the url provided in the command prompt or follow this -> [link here](http://localhost:9000/index.html)
+
+Alternatively, open the html file in browser - packet_visuals.html
 Refresh the page to start it again. 
 ---
 ## Sample Data Packet
@@ -26,7 +30,7 @@ Refresh the page to start it again.
  Flourescent color is for when the node is transmitting 
  The default color depicts a node which is in it's resting state and possibly recieving packets. This is done because as there are only two active nodes there is no need to highlight or emphasize any nodes recieving packets.
  ```
-![alt text](./transmittingNode.png "Mode highlighted in green transmitting a packet")
+![alt text](./transmittingNode.png "Node highlighted in green transmitting a packet")
 
 * The color of the cell, which is the dot, determines the protocol being used.
 ```
@@ -50,8 +54,8 @@ Refresh the page to start it again.
 * Select time within a certain window
 * The issue here is that the packet data arrives faster than the browsers internal clock is able to keep up with. That is for every tic of the browsers clock more than one packet would have arrived.
 * Could be just how javascript handles floating point numbers. A possible solution would be to convert it all to integers and deal with each time interval separately and designate a sing;e tic of the clock to the smallest difference within the data. Make is pseudo-real-time!
-5. TODO: Animate changes in ```update()``` loop.
-6. TODO: Document code
+5. TODO: Animate connected lines in ```update()``` loop.
+
 ---
 ### Hours put in
 * Monday 18th March - 4 hrs.

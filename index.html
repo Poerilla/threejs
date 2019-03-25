@@ -105,6 +105,17 @@
 
         console.log(ico.geometry.vertices);
 
+        // Setting for geometry vertices colors
+        for (var i in ico.children)
+          ico.children[i].material.vertexColors = THREE.VertexColors;
+        for (var faceIndex in ico.geometry.faces) {
+          for (vertexIndex in ico.geometry.faces[faceIndex]) {
+            ico.geometry.faces[faceIndex].vertexColors[
+              vertexIndex
+            ] = new THREE.Color(0xff00f0);
+          }
+        }
+
         for (var i in ico.geometry.vertices) {
           vs = new THREE.Mesh(
             new THREE.SphereGeometry(1.2),
@@ -141,7 +152,7 @@
         scene.add(ico);
 
         window.addEventListener("resize", onWindowResize, false);
-        //document.addEventListener("mousemove", onDocumentMouseMove, false);
+        document.addEventListener("mousemove", onDocumentMouseMove, false);
         //document.addEventListener("mousedown", onDocumentMouseDown, false);
         //document.addEventListener("mouseup", onDocumentMouseUp, false);
       }
@@ -211,13 +222,13 @@
         //console.log(t,keyframe);
         let index = pcapDataIndex;
         let diff = parseInt(pcapData[index].Time - t);
-        console.log(t, diff);
+        //console.log(t, diff);
         if (diff > 15) {
-          console.log("time lapse");
+          //console.log("time lapse");
           t += parseInt(diff / 2);
         } else {
           t += 1;
-          console.log("single move");
+          //console.log("single move");
         }
 
         // t = t % maxTime;
@@ -247,6 +258,24 @@
         controls.update();
       }
       function animateData(o, keyframe) {
+        for (var i in ico.children) {
+          if (ico.children[i].userData.behav === "cell") {
+            if (ico.children[i].userData.verticeIndex === o) {
+              ico.children[i].material.color.setHex(0x78f9f6);
+              ico.children[i].scale.set(3, 3, 3);
+            } else {
+              ico.children[i].material.color.setHex(0xff1111);
+              ico.children[i].scale.set(1, 1, 1);
+            }
+          }
+          if (ico.children[i].userData.behav === "wireframe") {
+            if (ico.children[i].userData.verticeIndex === o) {
+              ico.children[i].material.opacity = 0.6;
+            } else {
+              ico.children[i].material.opacity = 0.1;
+            }
+          }
+        }
         for (let i = 0; i < 4; i++) {
           if (ico.children[i].userData.behav === "cell") {
             if (ico.children[i].userData.verticeIndex === o) {
@@ -320,6 +349,16 @@
         return null;
       }
       function render() {
+        for (var faceIndex in ico.geometry.faces) {
+          for (vertexIndex in ico.geometry.faces[faceIndex].vertexColors) {
+            ico.geometry.faces[faceIndex].vertexColors[vertexIndex].setHSL(
+              Math.random(),
+              0.5,
+              0.5
+            );
+            ico.geometry.colorsNeedUpdate = true;
+          }
+        }
         renderer.render(scene, camera);
       }
     </script>
