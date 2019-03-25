@@ -3,7 +3,7 @@ The name of the company is Cybernetiq, which (as interpreted by this developer) 
 
 ## Run project
 ### run server
-'''node server.js'''
+```node server.js```
 follow the url provided in the command prompt or follow this -> [link here](http://localhost:9000/index.html)
 
 Alternatively, open the html file in browser - packet_visuals.html
