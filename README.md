@@ -23,7 +23,7 @@ Run the start command:
 
 Observe Server Prompts in the terminal and or follow this -> [link here](http://localhost:9000/index.html)
 
->Alternatively, open the html file in browser - packet_visuals.html
+>Alternatively, open the html file in browser - index.html.html
 Refresh the page to start it again. 
 ---
 ## Sample Data Packet
